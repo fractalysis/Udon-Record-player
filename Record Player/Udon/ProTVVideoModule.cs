@@ -1,14 +1,13 @@
-﻿using UdonSharp;
+using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
-using VRC.Udon;
-using ArchiTech;
+using ArchiTech.ProTV;
 
 namespace RecordPlayer
 {
     public class ProTVVideoModule : UdonSharpBehaviour
     {
-        public TVManagerV2 tv;
+        public TVManager tv;
         [HideInInspector] public VRCUrl url = VRCUrl.Empty;
         [HideInInspector] public bool canControlVideoPlayer;
         [HideInInspector] public bool isPlaying;
@@ -23,24 +22,24 @@ namespace RecordPlayer
 
         public void _UpdateVideoPlayerStatus()
         {
-            isPlaying = tv.currentState == 1; // PLAYING
+            isPlaying = (int)tv.state == 2; // PLAYING
             length = tv.videoDuration;
             currentTime = tv.currentTime;
         }
 
         public void _UpdateCanControlVideoPlayer()
         {
-            canControlVideoPlayer = tv._IsPrivilegedUser();
+            canControlVideoPlayer = tv._IsAuthorized();
         }
 
         void Start()
         {
-            tv._RegisterUdonSharpEventReceiver(this);
+            tv._RegisterListener(this);
         }
 
         public void _PlayVideoViaModule()
         {
-            tv._ChangeMediaTo(url);
+            tv._ChangeMedia(url);
         }
     }
 }
